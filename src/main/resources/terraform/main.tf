@@ -70,11 +70,7 @@ resource "azurerm_container_app" "mkheck" {
   }
 
   registry {
-    # username = var.SP_USER_NAME
-    # password_secret_name = var.SP_PASSWORD
     server = var.ACR_REGISTRY_SVR
-    # server   = data.azurerm_container_registry.acr.login_server # Where the hell did login_server come from?!?!
-    # server = data.azurerm_container_registry.acr.name
     # identity = var.ACR_MANAGED_IDENTITY
     identity = azurerm_user_assigned_identity.mkheck.id
   }
