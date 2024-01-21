@@ -16,19 +16,19 @@ resource "azurerm_resource_group" "mkheck" {
   location = var.AZ_LOCATION
 }
 
-# resource "azurerm_log_analytics_workspace" "mkheck" {
-#   name                = "acctest-01"
-#   location            = azurerm_resource_group.mkheck.location
-#   resource_group_name = azurerm_resource_group.mkheck.name
-#   sku                 = "PerGB2018"
-#   retention_in_days   = 30
-# }
-
-resource "azurerm_container_app_environment" "mkheck" {
-  name                = var.AZ_CONTAINERAPP_ENV
+resource "azurerm_log_analytics_workspace" "mkheck" {
+  name                = "${var.IMAGE_NAME}-law"
   location            = azurerm_resource_group.mkheck.location
   resource_group_name = azurerm_resource_group.mkheck.name
-  #   log_analytics_workspace_id = azurerm_log_analytics_workspace.mkheck.id
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "azurerm_container_app_environment" "mkheck" {
+  name                       = var.AZ_CONTAINERAPP_ENV
+  location                   = azurerm_resource_group.mkheck.location
+  resource_group_name        = azurerm_resource_group.mkheck.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.mkheck.id
 }
 
 
@@ -38,14 +38,9 @@ data "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_user_assigned_identity" "mkheck" {
-  location = azurerm_resource_group.mkheck.location
-  # name                = "mycontainerapp"
+  location            = azurerm_resource_group.mkheck.location
   name                = var.ACR_MANAGED_IDENTITY
   resource_group_name = azurerm_resource_group.mkheck.name
-  # identity_type       = "UserAssigned"
-  # identity_ids = [
-  #   data.azurerm_container_registry.acr.id
-  # ]
 }
 
 resource "azurerm_role_assignment" "mkheck" {
@@ -62,8 +57,7 @@ resource "azurerm_container_app" "mkheck" {
   name                         = var.AZ_CONTAINERAPP_NAME
   container_app_environment_id = azurerm_container_app_environment.mkheck.id
   resource_group_name          = azurerm_resource_group.mkheck.name
-  # revision_mode                = "Single"
-  revision_mode = "Multiple"
+  revision_mode                = "Single"
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.mkheck.id]
@@ -71,13 +65,11 @@ resource "azurerm_container_app" "mkheck" {
 
   registry {
     server = var.ACR_REGISTRY_SVR
-    # identity = var.ACR_MANAGED_IDENTITY
     identity = azurerm_user_assigned_identity.mkheck.id
   }
 
   template {
     container {
-      # name   = "mycontainerapp"
       name   = var.AZ_CONTAINERAPP_NAME
       image  = "${var.ACR_REGISTRY_SVR}/${var.DOCKER_ID}/${var.IMAGE_NAME}:${var.IMAGE_TAG}"
       cpu    = 0.5
