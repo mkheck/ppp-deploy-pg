@@ -1,12 +1,12 @@
+variable "AZ_RESOURCE_GROUP" {
+  type     = string
+  nullable = false
+}
+
 variable "AZ_LOCATION" {
   type     = string
   nullable = false
   default  = "eastus"
-}
-
-variable "AZ_RESOURCE_GROUP" {
-  type     = string
-  nullable = false
 }
 
 variable "AZ_CONTAINERAPP_ENV" {
@@ -29,27 +29,12 @@ variable "ACR_RESOURCE_GROUP" {
   nullable = false
 }
 
-variable "ACR_REGISTRY_SVR" {
-  type     = string
-  nullable = false
-}
-
 variable "ACR_MANAGED_IDENTITY" {
   type     = string
   nullable = false
 }
 
-variable "SP_USER_NAME" {
-  type     = string
-  nullable = false
-}
-
-variable "SP_NAME" {
-  type     = string
-  nullable = false
-}
-
-variable "SP_PASSWORD" {
+variable "ACR_REGISTRY_SVR" {
   type     = string
   nullable = false
 }
