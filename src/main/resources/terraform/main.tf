@@ -58,14 +58,25 @@ resource "azurerm_container_app" "mkheck" {
   container_app_environment_id = azurerm_container_app_environment.mkheck.id
   resource_group_name          = azurerm_resource_group.mkheck.name
   revision_mode                = "Single"
+
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.mkheck.id]
   }
 
   registry {
-    server = var.ACR_REGISTRY_SVR
+    server   = var.ACR_REGISTRY_SVR
     identity = azurerm_user_assigned_identity.mkheck.id
+  }
+
+  ingress {
+    # allow_insecure_connections = true
+    external_enabled = true
+    target_port      = 8080
+    traffic_weight {
+      revision_suffix = "blue"
+      percentage = 100
+    }
   }
 
   template {
