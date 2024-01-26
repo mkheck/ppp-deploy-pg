@@ -74,7 +74,8 @@ resource "azurerm_container_app" "mkheck" {
     external_enabled = true
     target_port      = 8080
     traffic_weight {
-      revision_suffix = "blue"
+      latest_revision = true
+      # revision_suffix = "blue"
       percentage = 100
     }
   }
